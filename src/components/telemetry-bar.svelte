@@ -31,6 +31,8 @@
                     <div class="connection-indicator" style="background: {value ? 'green' : 'red'}"></div>
                     <div>{formatValue(key, value)}</div>
                 </div>
+            {:else if key === "user_mode" && value !== "user"}
+                <div class="autonomous-mode blinking-red">{formatValue(key, value)}</div>
             {:else}
                 <div>{formatValue(key, value)}</div>
             {/if}
@@ -76,4 +78,30 @@
         border-radius: 50%;
         margin: 4px 0;
     }
+
+    .autonomous-mode {
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 5px;
+    }
+
+    .blinking-red {
+        background-color: red;
+        color: white;
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 5px;
+        animation: blink-bg 1s step-start infinite;
+    }
+
+
+    @keyframes blink-bg {
+        0%, 100% {
+            background-color: red;
+        }
+        50% {
+            background-color: darkred;
+        }
+    }
+
 </style>

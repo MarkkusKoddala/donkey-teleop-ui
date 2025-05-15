@@ -30,7 +30,7 @@ export class KeyboardController extends BaseController {
         window.addEventListener("keyup", this.handleKeyUp);
 
         // Poll at 10 Hz
-        this.pollIntervalId = window.setInterval(() => this.updateControls(), 10);
+        this.pollIntervalId = window.setInterval(() => this.updateControls(), 100);
 
         console.log("KeyboardController initialized");
     }
@@ -53,31 +53,51 @@ export class KeyboardController extends BaseController {
             return;
         }
         this.activeKeys.add(event.key);
+        this.lastInputTime = performance.now();
     };
 
     private handleKeyUp = (event: KeyboardEvent) => {
         // Remove from the set on key up
         if (this.activeKeys.has(event.key)) {
             this.activeKeys.delete(event.key);
+            this.lastInputTime = performance.now();
         }
     };
 
     private updateControls() {
-        let newThrottle = 0.0;
-        let newAngle = 0.0;
+        // If any key is held, reset idle timer
+        if (this.activeKeys.size > 0) {
+            this.lastInputTime = performance.now();
+        }
 
-        // Respond only to actually held-down keys
-        if (this.activeKeys.has(this.buttonMappings.accelerate)) {
-            newThrottle += 1.0;
-        }
-        if (this.activeKeys.has(this.buttonMappings.brake)) {
-            newThrottle -= 1.0;
-        }
-        if (this.activeKeys.has(this.buttonMappings.left)) {
-            newAngle -= 1.0;
-        }
-        if (this.activeKeys.has(this.buttonMappings.right)) {
-            newAngle += 1.0;
+        const now = performance.now();
+        const timeSinceLastInput = now - this.lastInputTime;
+        const hasTimedOut = timeSinceLastInput > 1000;
+
+        let newThrottle: number;
+        let newAngle: number;
+
+
+        // Safety purpose to set all 0 if no input
+        if (hasTimedOut) {
+            newThrottle = 0.0;
+            newAngle = 0.0;
+        } else {
+            newThrottle = 0.0;
+            newAngle = 0.0;
+
+            if (this.activeKeys.has(this.buttonMappings.accelerate)) {
+                newThrottle += 1.0;
+            }
+            if (this.activeKeys.has(this.buttonMappings.brake)) {
+                newThrottle -= 1.0;
+            }
+            if (this.activeKeys.has(this.buttonMappings.left)) {
+                newAngle -= 1.0;
+            }
+            if (this.activeKeys.has(this.buttonMappings.right)) {
+                newAngle += 1.0;
+            }
         }
 
         this.updateControl(newThrottle, newAngle);

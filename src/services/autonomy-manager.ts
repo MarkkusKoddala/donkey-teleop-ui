@@ -3,7 +3,7 @@ import type {ControllerManager} from "./controller-manager";
 
 
 // Time (ms) without video after which autonomy is activated
-const VIDEO_FRAME_LOSS_TRESHOLD_MS  = 100;
+const VIDEO_FRAME_LOSS_TRESHOLD_MS  = 1000;
 
 /**
  * AutonomyManager monitors video feed and user input,

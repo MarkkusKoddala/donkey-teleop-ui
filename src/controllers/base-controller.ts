@@ -41,8 +41,6 @@ export abstract class BaseController {
             angle: this.angle * this.angleScaling,
         };
 
-        console.log(payload)
-
         this.websocketService.send(JSON.stringify(payload));
     }
 
